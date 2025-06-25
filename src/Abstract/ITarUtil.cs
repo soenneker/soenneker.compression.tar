@@ -7,5 +7,5 @@ namespace Soenneker.Compression.Tar.Abstract;
 /// </summary>
 public interface ITarUtil
 {
-    void Extract(string filePath, string outputFilePath, CancellationToken cancellationToken = default);
+    void Extract(string filePath, string outputDir, CancellationToken cancellationToken = default);
 }

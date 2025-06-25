@@ -8,7 +8,7 @@ using System.Threading;
 namespace Soenneker.Compression.Tar;
 
 /// <inheritdoc cref="ITarUtil"/>
-public sealed class TarUtil: ITarUtil
+public sealed class TarUtil : ITarUtil
 {
     private readonly ILogger<TarUtil> _logger;
 
@@ -17,20 +17,20 @@ public sealed class TarUtil: ITarUtil
         _logger = logger;
     }
 
-    public void Extract(string filePath, string outputFilePath, CancellationToken cancellationToken = default)
+    public void Extract(string filePath, string outputDir, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Extracting tar file: {FilePath} to {OutputFilePath} ...", filePath, outputFilePath);
+        _logger.LogInformation("Extracting tar file: {FilePath} to {OutputFilePath} ...", filePath, outputDir);
 
         using TarArchive archive = TarArchive.Open(filePath);
 
-        foreach (var entry in archive.Entries)
+        foreach (TarArchiveEntry entry in archive.Entries)
         {
             // Check for cancellation before processing each entry
             cancellationToken.ThrowIfCancellationRequested();
 
             if (!entry.IsDirectory)
             {
-                entry.WriteToDirectory(outputFilePath, new ExtractionOptions
+                entry.WriteToDirectory(outputDir, new ExtractionOptions
                 {
                     ExtractFullPath = true,
                     Overwrite = true
