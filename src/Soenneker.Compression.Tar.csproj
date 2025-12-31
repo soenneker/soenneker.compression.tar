@@ -43,6 +43,6 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
         <PackageReference Include="SharpCompress" Version="0.42.1" />
-        <PackageReference Include="Soenneker.Extensions.Task" Version="4.0.108" />
+        <PackageReference Include="Soenneker.Extensions.Task" Version="4.0.109" />
     </ItemGroup>
 </Project>
