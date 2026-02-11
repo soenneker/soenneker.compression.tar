@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
-using SharpCompress.Common;
 using Soenneker.Compression.Tar.Abstract;
 using System.Threading;
+using System.Threading.Tasks;
+using SharpCompress.Writers.Tar;
+using Soenneker.Extensions.ValueTask;
 
 namespace Soenneker.Compression.Tar;
 
@@ -17,24 +19,17 @@ public sealed class TarUtil : ITarUtil
         _logger = logger;
     }
 
-    public void Extract(string filePath, string outputDir, CancellationToken cancellationToken = default)
+    public async ValueTask Extract(string filePath, string outputDir, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Extracting tar file: {FilePath} to {OutputFilePath} ...", filePath, outputDir);
 
-        using TarArchive archive = TarArchive.Open(filePath);
+        IWritableAsyncArchive<TarWriterOptions> archive = TarArchive.OpenAsyncArchive(filePath);
 
-        foreach (TarArchiveEntry entry in archive.Entries)
+        await foreach (IArchiveEntry entry in archive.EntriesAsync.WithCancellation(cancellationToken))
         {
-            // Check for cancellation before processing each entry
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (!entry.IsDirectory)
             {
-                entry.WriteToDirectory(outputDir, new ExtractionOptions
-                {
-                    ExtractFullPath = true,
-                    Overwrite = true
-                });
+                await entry.WriteToDirectoryAsync(outputDir, cancellationToken).NoSync();
             }
         }
     }
