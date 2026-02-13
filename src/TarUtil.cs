@@ -23,7 +23,7 @@ public sealed class TarUtil : ITarUtil
     {
         _logger.LogInformation("Extracting tar file: {FilePath} to {OutputFilePath} ...", filePath, outputDir);
 
-        IWritableAsyncArchive<TarWriterOptions> archive = TarArchive.OpenAsyncArchive(filePath);
+        IWritableAsyncArchive<TarWriterOptions> archive = await TarArchive.OpenAsyncArchive(filePath, cancellationToken: cancellationToken).NoSync();
 
         await foreach (IArchiveEntry entry in archive.EntriesAsync.WithCancellation(cancellationToken))
         {
