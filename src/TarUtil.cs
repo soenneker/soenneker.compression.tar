@@ -25,11 +25,11 @@ public sealed class TarUtil : ITarUtil
 
         IWritableAsyncArchive<TarWriterOptions> archive = await TarArchive.OpenAsyncArchive(filePath, cancellationToken: cancellationToken).NoSync();
 
-        await foreach (IArchiveEntry entry in archive.EntriesAsync.WithCancellation(cancellationToken))
+        await foreach (IArchiveEntry entry in archive.EntriesAsync.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             if (!entry.IsDirectory)
             {
-                await entry.WriteToDirectoryAsync(outputDir, cancellationToken).NoSync();
+                await entry.WriteToDirectoryAsync(outputDir, null, cancellationToken).NoSync();
             }
         }
     }
