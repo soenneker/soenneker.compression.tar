@@ -1,20 +1,19 @@
-﻿using Soenneker.Compression.Tar.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Compression.Tar.Abstract;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.Compression.Tar.Tests;
 
-[Collection("Collection")]
-public sealed class TarUtilTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class TarUtilTests : HostedUnitTest
 {
     private readonly ITarUtil _util;
 
-    public TarUtilTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public TarUtilTests(Host host) : base(host)
     {
         _util = Resolve<ITarUtil>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
