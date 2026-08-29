@@ -12,6 +12,8 @@ public static class TarUtilRegistrar
     /// <summary>
     /// Adds <see cref="ITarUtil"/> as a singleton service. <para/>
     /// </summary>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddTarUtilAsSingleton(this IServiceCollection services)
     {
         services.TryAddSingleton<ITarUtil, TarUtil>();
@@ -22,6 +24,8 @@ public static class TarUtilRegistrar
     /// <summary>
     /// Adds <see cref="ITarUtil"/> as a scoped service. <para/>
     /// </summary>
+    /// <param name="services">Service collection that receives the registration.</param>
+    /// <returns>The same service collection, so additional registrations can be chained.</returns>
     public static IServiceCollection AddTarUtilAsScoped(this IServiceCollection services)
     {
         services.TryAddScoped<ITarUtil, TarUtil>();
