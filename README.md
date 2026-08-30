@@ -5,7 +5,7 @@
 
 # Soenneker.Compression.Tar
 
-A utility library dealing with Tar compression and decompression.
+Extracts TAR archives into a directory with path-containment and link checks.
 
 ## Install
 
@@ -13,31 +13,37 @@ A utility library dealing with Tar compression and decompression.
 dotnet add package Soenneker.Compression.Tar
 ```
 
-## Quick start
+## Registration
 
 ```csharp
 using Soenneker.Compression.Tar.Registrars;
 using Microsoft.Extensions.DependencyInjection;
 
 var services = new ServiceCollection();
-var result = services.AddTarUtilAsSingleton();
+services.AddTarUtilAsSingleton();
 ```
 
-Adds `ITarUtil` as a singleton service.
+Use `AddTarUtilAsScoped()` instead when its lifetime should follow a dependency-injection scope.
 
-## What you get
+## Usage
 
-- `ITarUtil` — A utility library dealing with Tar compression and decompression.
-- `TarUtilRegistrar` — A utility library dealing with Tar compression and decompression.
+```csharp
+using Soenneker.Compression.Tar.Abstract;
 
-## API at a glance
+public sealed class ArchiveImporter(ITarUtil tarUtil)
+{
+    public ValueTask Extract(string archivePath, string destinationPath, CancellationToken cancellationToken = default)
+    {
+        return tarUtil.Extract(archivePath, destinationPath, cancellationToken);
+    }
+}
+```
 
-| API | What it does | Result / important behavior |
-| --- | --- | --- |
-| `ITarUtil.Extract(filePath, outputDir, cancellationToken)` | Extracts the contents of the specified archive file to the given output directory asynchronously. | A ValueTask that represents the asynchronous extraction operation. |
-| `TarUtilRegistrar.AddTarUtilAsSingleton(services)` | Adds `ITarUtil` as a singleton service. | The same service collection, so additional registrations can be chained. |
-| `TarUtilRegistrar.AddTarUtilAsScoped(services)` | Adds `ITarUtil` as a scoped service. | The same service collection, so additional registrations can be chained. |
+`Extract` creates the destination directory if necessary and writes regular archive entries beneath it. It rejects symbolic and hard links, paths that resolve outside the destination, and multiple entries that resolve to the same output path.
 
 ## Practical notes
 
-- Cancellation stops pending work; it does not undo work that has already completed.
+- This package extracts TAR archives; it does not create them.
+- The destination is caller-owned. If extraction fails or is cancelled, files already written are left in place.
+- Existing-file behavior is controlled by SharpCompress. Use an empty destination when replacement semantics matter.
+- Path checks do not protect against oversized or highly compressible archives. Apply application-specific file-count, size, and storage limits before accepting untrusted content.
